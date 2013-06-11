@@ -1,0 +1,32 @@
+From 62e5c8f3e289a2505e9b4d162cf37fbfb53fe981 Mon Sep 17 00:00:00 2001
+From: John Peterson <john.s.peterson@live.com>
+Date: Tue, 11 Jun 2013 19:50:03 +0200
+Subject: [PATCH] Build fix for hlist_for_each_entry
+
+---
+ inode.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/inode.c b/inode.c
+index 8d6cfbb..e9c3465 100644
+--- a/inode.c
++++ b/inode.c
+@@ -1811,14 +1811,13 @@ HgfsPermission(struct inode *inode,
+     */
+    if (mask & MAY_ACCESS) { /* For sys_access. */
+       struct dentry *dentry;
+-      struct hlist_node *p;
+       int dcount = 0;
+ 
+       if (mask & MAY_NOT_BLOCK)
+          return -ECHILD;
+ 
+       /* Find a dentry with valid d_count. Refer bug 587879. */
+-      hlist_for_each_entry(dentry, p, &inode->i_dentry, d_alias) {
++      hlist_for_each_entry(dentry, &inode->i_dentry, d_alias) {
+          dcount = dentry->d_count;
+          if (dcount) {
+             LOG(4, ("Found %s %d \n", dentry->d_name.name, dcount));
+-- 
+1.7.9
+
